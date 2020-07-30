@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
-
 const salt = 10;
 
 router.post("/signin", (req, res, next) => {

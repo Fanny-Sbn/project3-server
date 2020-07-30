@@ -23,8 +23,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
-    store: new MongoStore({ mongooseConnection: mongoose.connection }),
-    secret: process.env.SESSION_SECRET,
+    store: new MongoStore({ mongooseConnection: mongoose.connection }), // Persist session in database.
+    secret: process.env.SECRET_SESSION,
     resave: true,
     saveUninitialized: true,
   })
@@ -42,8 +42,32 @@ app.use(function (req, res, next) {
 
 const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth");
+const clientRouter = require("./routes/client");
+const adminRouter = require("./routes/admin");
+
 
 app.use("/", indexRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/client", clientRouter);
+app.use("/api/admin", adminRouter);
+
+// 404 Middleware
+app.use((req, res, next) => {
+  const error = new Error("Ressource not found.");
+  error.status = 404;
+  next(err);
+});
+
+// Error handler middleware
+// If you pass an argument to your next function in any of your routes or middlewares
+// You will end up in this middleware
+// next("toto") makes you end up here
+app.use((err, req, res, next) => {
+  console.log("An error occured");
+  res.status(err.status || 500);
+  if (!res.headersSent) {
+    res.json(err);
+  }
+});
 
 module.exports = app;

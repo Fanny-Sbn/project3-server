@@ -2,8 +2,17 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  email: { type: String, required: true },
-  password: { type: String, required: true },
+  firstName: String,
+  lastName: String,
+  role: {
+    type: String,
+    enum: ["admin", "employee", "client"],
+    default: "client"
+  },
+  companyName : String,
+  email: String,
+  password: String,
+  phoneNumber: String,
 });
 
 const User = mongoose.model("User", userSchema);
