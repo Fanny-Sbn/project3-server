@@ -24,6 +24,8 @@ router.get("/point-vente", (req, res, next) => {
     const currentUserId = req.session.currentUser._id;
     PointOfSale.find({ id_user: currentUserId })
         .then((pointOfSaleDocuments) => {
+          console.log("points of sales", pointOfSaleDocuments
+          )
             res.status(200).json(pointOfSaleDocuments);
         })
         .catch((error) => {
@@ -37,12 +39,40 @@ router.post("/creation-point-vente", (req, res, next) => {
   
     PointOfSale.create(updateValues)
       .then((pointOfSaleDocument) => {
-        pointOfSaleDocument
-          .populate("id_user").execPopulate() 
-          .then((pointOfSale) => {
-            res.status(201).json(pointOfSale);
+       PointOfSale
+          .find({id_user: req.session.currentUser._id })
+          .then((pointOfSales) => {
+            res.status(201).json(pointOfSales);
           })
           .catch((error) => res.status(500).json(error));
+      })
+      .catch((error) => {
+        res.status(500).json(error);
+      });
+  });
+
+  router.get("/point-vente/:id/machine", (req, res, next) => {
+     Machine.find({ id_pointofSale: req.params.id })
+        .then((machine) => {
+          console.log("machines", machine
+          )
+            res.status(200).json(machine);
+        })
+        .catch((error) => {
+            res.status(500).json(error);
+        })
+      });
+
+  router.post("/creation-machine/:id", upload.single("image"), (req, res, next) => {
+    const updateValues = { ...req.body };  
+    if(req.file){
+      updateValues.image = req.file.path;
+    }
+    updateValues.id_pointofSale = req.params.id;
+  
+    Machine.create(updateValues)
+      .then((machine) => {
+        res.status(201).json(machine);
       })
       .catch((error) => {
         res.status(500).json(error);
@@ -60,7 +90,9 @@ router.post("/creation-point-vente", (req, res, next) => {
       });
   }); */
 
-  /* router.patch("/me", upload.single("profileImg"), (req, res, next) => {
+  /*
+  upload.single("image")
+   router.patch("/me", upload.single("profileImg"), (req, res, next) => {
     const userId = req.session.currentUser._id;
   
     // If no file is sent, req.file is undefined, leading to an error when trying to
