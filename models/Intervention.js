@@ -6,10 +6,15 @@ const interventionSchema = new Schema({
         type: String,
         enum: ["Demande réglages", "Demande entretien", "Demande dépannage", "Demande réapprovisionnement"]
     },
-    code: String,
+    selectedOption: [String],
     description: String,
-    date: { type: Date, default: new Date() },
-    solved: { type: Boolean, default: false },
+    date: { 
+        type: Date, 
+        default: new Date() 
+    },
+    solved: { 
+        type: Boolean, default: false 
+    },
 
     id_machine: {
         type: Schema.Types.ObjectId,
