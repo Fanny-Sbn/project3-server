@@ -20,6 +20,15 @@ const interventionSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Machine",
     },
+    id_user: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+    },
+    id_pointofSale: {
+        type: Schema.Types.ObjectId,
+        ref: "PointOfSale",
+    },
+    
 },
     {
         timestamps: { createdAt: "created_at", updatedAt: "updated_at" }

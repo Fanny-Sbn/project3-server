@@ -13,6 +13,10 @@ const userSchema = new Schema({
   email: String,
   password: String,
   phoneNumber: String,
+  pointsOfSale: [
+    { type: Schema.Types.ObjectId,
+    ref: 'PointOfSale' }
+],
 });
 
 const User = mongoose.model("User", userSchema);

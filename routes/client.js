@@ -25,8 +25,6 @@ router.get("/point-vente", (req, res, next) => {
   const currentUserId = req.session.currentUser._id;
   PointOfSale.find({ id_user: currentUserId })
     .then((pointOfSaleDocuments) => {
-      console.log("points of sales", pointOfSaleDocuments
-      )
       res.status(200).json(pointOfSaleDocuments);
     })
     .catch((error) => {
@@ -46,6 +44,7 @@ router.post("/creation-point-vente", (req, res, next) => {
           res.status(201).json(pointOfSales);
         })
         .catch((error) => res.status(500).json(error));
+      return User.findByIdAndUpdate(req.session.currentUser._id, { $push: { pointsOfSale: pointOfSaleDocument._id } });
     })
     .catch((error) => {
       res.status(500).json(error);
@@ -55,8 +54,6 @@ router.post("/creation-point-vente", (req, res, next) => {
 router.get("/point-vente/:id/machine", (req, res, next) => {
   Machine.find({ id_pointofSale: req.params.id })
     .then((machine) => {
-      console.log("machines", machine
-      )
       res.status(200).json(machine);
     })
     .catch((error) => {
@@ -74,19 +71,23 @@ router.post("/creation-machine/:id", upload.single("image"), (req, res, next) =>
   Machine.create(updateValues)
     .then((machine) => {
       res.status(201).json(machine);
+      return PointOfSale.findByIdAndUpdate(req.params.id, { $push: { machines: machine._id } });
     })
     .catch((error) => {
       res.status(500).json(error);
     });
 });
 
-router.post("/machine/:id/intervention", (req, res, next) => {
+router.post("/machine/:idPointOfSale/:idMachine/intervention", (req, res, next) => {
   const updateValues = { ...req.body };
-  updateValues.id_machine = req.params.id;
+  updateValues.id_machine = req.params.idMachine;
+  updateValues.id_user = req.session.currentUser._id;
+  updateValues.id_pointofSale = req.params.idPointOfSale;
 
   Intervention.create(updateValues)
     .then((intervention) => {
       res.status(201).json(intervention);
+      return Machine.findByIdAndUpdate(req.params.idMachine, { $push: { interventions: intervention._id } });
     })
     .catch((error) => {
       res.status(500).json(error);

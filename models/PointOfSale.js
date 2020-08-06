@@ -17,6 +17,10 @@ const pointofsaleSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
     },
+    machines: [
+        { type: Schema.Types.ObjectId,
+        ref: 'Machine' }
+    ],
 },
     {
         timestamps: { createdAt: "created_at", updatedAt: "updated_at" }

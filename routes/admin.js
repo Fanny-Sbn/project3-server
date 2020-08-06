@@ -3,10 +3,11 @@ const router = express.Router();
 const User = require("../models/User");
 const Machine = require("../models/Machine");
 const PointOfSale = require("../models/PointOfSale");
+const Intervention = require("../models/Intervention");
 
 router.get('/all-clients', (req, res) => {
     User
-        .find({ role: "client" })
+        .find({ role: "client" }).populate({ path: 'pointsOfSale', populate: { path: 'machines' } })
         .then((userDocument) => {
             res.status(200).json(userDocument);
         })
@@ -26,40 +27,52 @@ router.get("/points-vente", (req, res, next) => {
 });
 
 router.get("/depannage", (req, res, next) => {
-    Machine.find({ $and: [{ "intervention.title": "Demande dépannage" }, { "intervention.solved": false }] }).sort( { "intervention.date": -1 } )
-        .then((machine) => {
-            res.status(201).json(machine);
+    Intervention.find({ $and: [{ title: "Demande dépannage" }, { solved: false }] }).sort({ date: -1 })
+        .populate('id_machine')
+        .populate('id_pointofSale')
+        .populate('id_user')
+        .then((intervention) => {
+            res.status(201).json(intervention);
         })
         .catch((error) => res.status(500).json(error));
 });
 
 router.get("/reapprovisionnement", (req, res, next) => {
-    Machine.find({ $and: [{ "intervention.title": "Demande réapprovisionnement" }, { "intervention.solved": false }] }).sort( { "intervention.date": -1 } )
-        .then((machine) => {
-            res.status(201).json(machine);
+    Intervention.find({ $and: [{ title: "Demande réapprovisionnement" }, { solved: false }] }).sort({ date: -1 })
+        .populate('id_machine')
+        .populate('id_pointofSale')
+        .populate('id_user')
+        .then((intervention) => {
+            res.status(201).json(intervention);
         })
         .catch((error) => res.status(500).json(error));
 });
 
 router.get("/reglages", (req, res, next) => {
-    Machine
-        .find({ $and: [{ "intervention.title": "Demande réglages" }, { "intervention.solved": false }] }).sort( { "intervention.date": -1 } )
-        .then((machine) => {
-            res.status(201).json(machine);
+    Intervention
+        .populate('id_machine')
+        .populate('id_pointofSale')
+        .populate('id_user')
+        .find({ $and: [{ title: "Demande réglages" }, { solved: false }] }).sort({ date: -1 })
+        .then((intervention) => {
+            res.status(201).json(intervention);
         })
         .catch((error) => res.status(500).json(error));
 });
 
 router.get("/entretien", (req, res, next) => {
-    Machine.find({ $and: [{ "intervention.title": "Demande entretien" }, { "intervention.solved": false }] }).sort( { "intervention.date": -1 } )
-        .then((machine) => {
-            res.status(201).json(machine);
+    Intervention.find({ $and: [{ title: "Demande entretien" }, { solved: false }] }).sort({ date: -1 })
+    .populate('id_machine')
+    .populate('id_pointofSale')
+    .populate('id_user')
+        .then((intervention) => {
+            res.status(201).json(intervention);
         })
         .catch((error) => res.status(500).json(error));
 });
 
 router.get("/all-interventions", (req, res, next) => {
-    Machine.find({"intervention.solved": false }).sort( { "intervention.date": -1 } )
+    Intervention.find({ solved: false }).sort({ date: -1 })
         .then((machine) => {
             res.status(201).json(machine);
         })
