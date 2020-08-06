@@ -40,7 +40,6 @@ app.use(function (req, res, next) {
  * Routes
  */
 
-const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth");
 const clientRouter = require("./routes/client");
 const adminRouter = require("./routes/admin");
