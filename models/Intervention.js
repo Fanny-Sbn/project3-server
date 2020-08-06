@@ -7,7 +7,10 @@ const interventionSchema = new Schema({
         enum: ["Demande réglages", "Demande entretien", "Demande dépannage", "Demande réapprovisionnement"]
     },
     selectedOption: [String],
-    description: String,
+    description: {
+        type: String,
+        default: "Pas de description fournie par le client"
+    },
     date: { 
         type: Date, 
         default: new Date() 
@@ -15,7 +18,10 @@ const interventionSchema = new Schema({
     solved: { 
         type: Boolean, default: false 
     },
-
+    update:{
+        type:String,
+        enum:["rea", "entretien", "settings", "depannage"]
+    },
     id_machine: {
         type: Schema.Types.ObjectId,
         ref: "Machine",

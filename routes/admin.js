@@ -50,10 +50,10 @@ router.get("/reapprovisionnement", (req, res, next) => {
 
 router.get("/reglages", (req, res, next) => {
     Intervention
+        .find({ $and: [{ title: "Demande réglages" }, { solved: false }] }).sort({ date: -1 })
         .populate('id_machine')
         .populate('id_pointofSale')
         .populate('id_user')
-        .find({ $and: [{ title: "Demande réglages" }, { solved: false }] }).sort({ date: -1 })
         .then((intervention) => {
             res.status(201).json(intervention);
         })
@@ -62,9 +62,9 @@ router.get("/reglages", (req, res, next) => {
 
 router.get("/entretien", (req, res, next) => {
     Intervention.find({ $and: [{ title: "Demande entretien" }, { solved: false }] }).sort({ date: -1 })
-    .populate('id_machine')
-    .populate('id_pointofSale')
-    .populate('id_user')
+        .populate('id_machine')
+        .populate('id_pointofSale')
+        .populate('id_user')
         .then((intervention) => {
             res.status(201).json(intervention);
         })
@@ -81,13 +81,24 @@ router.get("/all-interventions", (req, res, next) => {
 
 //PATCH INTERVENTION
 
-/* router.get("/intervention/:id", (req, res, next) => {
+router.patch("/intervention/:id/:update", (req, res, next) => {
     oneIntervention = req.params.id
-    Machine.get({"intervention._id": oneIntervention })
-        .then((machine) => {
-            res.status(201).json(machine);
+    theUpdate = req.params.update
+    
+    Intervention.findByIdAndUpdate(oneIntervention, { solved: true }, { new: true })
+        .then((intervention) => {
+            res.status(201).json(intervention);
+            Intervention
+                .find({ $and: [{ update: theUpdate }, { solved: false }] }).sort({ date: -1 })
+                .populate('id_machine')
+                .populate('id_pointofSale')
+                .populate('id_user')
+                .then((intervention) => {
+                    res.status(201).json(intervention);
+                })
+                .catch((error) => res.status(500).json(error));
         })
-        .catch((error) => res.status(500).json(error));
-}); */
+    .catch((error) => res.status(500).json(error));
+});
 
 module.exports = router;
