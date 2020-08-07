@@ -2,11 +2,15 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const pointofsaleSchema = new Schema({
-    name: String,
+    name: {
+        type:String,
+        required: true,
+    },
     location: {
         type: {
             type: String,
             enum: ["Point"],
+            required: true,
         },
         coordinates: {
             type: [Number],
