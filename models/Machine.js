@@ -7,7 +7,7 @@ const machineSchema = new Schema({
     image: {
         type: String,
         default:
-            "./media/coffee-machine.png",
+            "./media/blue-machine.png",
     },
     last_control: Date,
 

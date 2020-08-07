@@ -13,7 +13,7 @@ const interventionSchema = new Schema({
     },
     date: { 
         type: Date, 
-        default: new Date() 
+        default: new Date()
     },
     solved: { 
         type: Boolean, default: false 

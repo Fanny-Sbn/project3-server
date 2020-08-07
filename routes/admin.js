@@ -4,8 +4,9 @@ const User = require("../models/User");
 const Machine = require("../models/Machine");
 const PointOfSale = require("../models/PointOfSale");
 const Intervention = require("../models/Intervention");
+const protectAdminRoute = require("./../middleware/ProtectAdminRoute");
 
-router.get('/all-clients', (req, res) => {
+router.get('/all-clients', protectAdminRoute, (req, res) => {
     User
         .find({ role: "client" }).populate({ path: 'pointsOfSale', populate: { path: 'machines' } })
         .then((userDocument) => {
@@ -16,7 +17,7 @@ router.get('/all-clients', (req, res) => {
         });
 });
 
-router.get("/points-vente", (req, res, next) => {
+router.get("/points-vente",protectAdminRoute, (req, res, next) => {
     PointOfSale.find()
         .then((pointOfSaleDocuments) => {
             res.status(200).json(pointOfSaleDocuments);
@@ -26,7 +27,7 @@ router.get("/points-vente", (req, res, next) => {
         });
 });
 
-router.get("/depannage", (req, res, next) => {
+router.get("/depannage", protectAdminRoute, (req, res, next) => {
     Intervention.find({ $and: [{ title: "Demande dépannage" }, { solved: false }] }).sort({ date: -1 })
         .populate('id_machine')
         .populate('id_pointofSale')
@@ -37,7 +38,7 @@ router.get("/depannage", (req, res, next) => {
         .catch((error) => res.status(500).json(error));
 });
 
-router.get("/reapprovisionnement", (req, res, next) => {
+router.get("/reapprovisionnement",protectAdminRoute, (req, res, next) => {
     Intervention.find({ $and: [{ title: "Demande réapprovisionnement" }, { solved: false }] }).sort({ date: -1 })
         .populate('id_machine')
         .populate('id_pointofSale')
@@ -48,7 +49,7 @@ router.get("/reapprovisionnement", (req, res, next) => {
         .catch((error) => res.status(500).json(error));
 });
 
-router.get("/reglages", (req, res, next) => {
+router.get("/reglages",protectAdminRoute, (req, res, next) => {
     Intervention
         .find({ $and: [{ title: "Demande réglages" }, { solved: false }] }).sort({ date: -1 })
         .populate('id_machine')
@@ -60,7 +61,7 @@ router.get("/reglages", (req, res, next) => {
         .catch((error) => res.status(500).json(error));
 });
 
-router.get("/entretien", (req, res, next) => {
+router.get("/entretien",protectAdminRoute, (req, res, next) => {
     Intervention.find({ $and: [{ title: "Demande entretien" }, { solved: false }] }).sort({ date: -1 })
         .populate('id_machine')
         .populate('id_pointofSale')
@@ -71,17 +72,28 @@ router.get("/entretien", (req, res, next) => {
         .catch((error) => res.status(500).json(error));
 });
 
-router.get("/all-interventions", (req, res, next) => {
+router.get("/archive",protectAdminRoute, (req, res, next) => {
+    Intervention.find({ solved: true}).sort({ date: -1 })
+        .populate('id_machine')
+        .populate('id_pointofSale')
+        .populate('id_user')
+        .then((intervention) => {
+            res.status(201).json(intervention);
+        })
+        .catch((error) => res.status(500).json(error));
+});
+
+/* router.get("/all-interventions", (req, res, next) => {
     Intervention.find({ solved: false }).sort({ date: -1 })
         .then((machine) => {
             res.status(201).json(machine);
         })
         .catch((error) => res.status(500).json(error));
-});
+}); */
 
 //PATCH INTERVENTION
 
-router.patch("/intervention/:id/:update", (req, res, next) => {
+router.patch("/intervention/:id/:update",protectAdminRoute, (req, res, next) => {
     oneIntervention = req.params.id
     theUpdate = req.params.update
     

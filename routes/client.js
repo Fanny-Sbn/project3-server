@@ -5,6 +5,7 @@ const Machine = require("../models/Machine");
 const PointOfSale = require("../models/PointOfSale");
 const Intervention = require("../models/Intervention");
 const upload = require("../config/cloudinary");
+const protectRoute = require("./../middleware/ProtectRoute");
 
 router.patch("/", (req, res, next) => {
   const userId = req.session.currentUser._id;
@@ -21,7 +22,7 @@ router.patch("/", (req, res, next) => {
     });
 });
 
-router.get("/point-vente", (req, res, next) => {
+router.get("/point-vente",protectRoute, (req, res, next) => {
   const currentUserId = req.session.currentUser._id;
   PointOfSale.find({ id_user: currentUserId })
     .then((pointOfSaleDocuments) => {
@@ -32,7 +33,7 @@ router.get("/point-vente", (req, res, next) => {
     });
 });
 
-router.post("/creation-point-vente", (req, res, next) => {
+router.post("/creation-point-vente",protectRoute, (req, res, next) => {
   const updateValues = { ...req.body };
   updateValues.id_user = req.session.currentUser._id;
 
@@ -51,7 +52,7 @@ router.post("/creation-point-vente", (req, res, next) => {
     });
 });
 
-router.get("/point-vente/:id/machine", (req, res, next) => {
+router.get("/point-vente/:id/machine",protectRoute, (req, res, next) => {
   Machine.find({ id_pointofSale: req.params.id })
     .then((machine) => {
       res.status(200).json(machine);
@@ -61,7 +62,7 @@ router.get("/point-vente/:id/machine", (req, res, next) => {
     })
 });
 
-router.post("/creation-machine/:id", upload.single("image"), (req, res, next) => {
+router.post("/creation-machine/:id",protectRoute, upload.single("image"), (req, res, next) => {
   const updateValues = { ...req.body };
   if (req.file) {
     updateValues.image = req.file.path;
@@ -78,7 +79,7 @@ router.post("/creation-machine/:id", upload.single("image"), (req, res, next) =>
     });
 });
 
-router.post("/machine/:idPointOfSale/:idMachine/intervention", (req, res, next) => {
+router.post("/machine/:idPointOfSale/:idMachine/intervention",protectRoute, (req, res, next) => {
   const updateValues = { ...req.body };
   updateValues.id_machine = req.params.idMachine;
   updateValues.id_user = req.session.currentUser._id;
